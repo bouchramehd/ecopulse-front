@@ -1,114 +1,85 @@
-# 🌍 EcoPulse – Environmental Risk Monitoring Dashboard
+# EcoPulse
 
-EcoPulse is a Big Data environmental monitoring application designed to analyze climate-related risks such as floods and droughts.
+EcoPulse is a full-stack environmental risk dashboard (flood + drought) with a FastAPI backend and a React/Vite frontend.
 
-The system integrates heterogeneous environmental data and produces analytical indicators to support decision-making and proactive risk management.
+## Monorepo structure
 
----
+- `backend/`: FastAPI API and data pipeline files (`bronze/`, `silver/`, `gold/`)
+- `frontend/`: React dashboard (Vite + Tailwind + Recharts + Leaflet)
+- `vercel.json`: unified deployment config (frontend + `/api` backend routing)
 
-## 🏗 Architecture
+## Local development
 
-EcoPulse follows a modern data architecture:
+### 1) Backend
 
-### 🔹 Bronze Layer (Raw Data)
-- CSV files (precipitation, temperature, soil data)
-- JSON weather alerts
-- Sensor logs
-- Relational database data
-
-### 🔹 Silver Layer (Processing)
-- Data cleaning
-- Data harmonization
-- Enrichment using Spark
-
-### 🔹 Gold Layer (Analytics)
-- Flood risk calculation
-- Drought risk calculation
-- Aggregated daily indicators
-- Risk categorization (Low / Medium / High)
-
----
-
-## ⚙️ Backend – FastAPI
-
-The backend exposes REST endpoints:
-
-- `GET /zones` → List available zones
-- `GET /risk/{zone_id}` → Full daily risk data for a zone
-- `GET /top_flood?n=5` → Top zones by flood risk
-- `GET /top_drought?n=5` → Top zones by drought risk
-
-### ▶ Run Backend
+From repository root:
 
 ```bash
+python -m venv .venv
+.\.venv\Scripts\activate
 pip install -r requirements.txt
-uvicorn app:app --reload --port 9000
-API available at:
+uvicorn backend.app:app --reload --port 9000
+```
 
-http://127.0.0.1:9000
-Swagger documentation:
+Backend URLs:
+- API: `http://127.0.0.1:9000`
+- Docs: `http://127.0.0.1:9000/docs`
 
-http://127.0.0.1:9000/docs
-🎨 Frontend – React + Tailwind + Recharts + Leaflet
-The frontend dashboard provides:
+### 2) Frontend
 
-Dynamic KPI cards
-
-Rainfall chart (last 7 days)
-
-Interactive map (Leaflet)
-
-Dynamic alerts (derived from latest risk data)
-
-Zone selector dropdown
-
-All components update automatically when changing the selected city.
-
-▶ Run Frontend
+```bash
+cd frontend
 npm install
 npm run dev
-Frontend available at:
+```
 
-http://localhost:5173
-📊 Key Features
-Real-time risk visualization
+Frontend URL:
+- `http://localhost:5173`
 
-Flood & drought categorization
+The frontend calls `/api/*`; in local dev, Vite proxies `/api` to `http://127.0.0.1:9000`.
 
-Rainfall monitoring
+## API endpoints
 
-Geographical risk mapping
+- `GET /` health message
+- `GET /zones`
+- `GET /risk/{zone_id}`
+- `GET /top_flood?n=5`
+- `GET /top_drought?n=5`
 
-Frontend-generated smart alerts
+## Vercel deployment
 
-Clean city-based data flow
+This repo is configured for a single Vercel project:
 
-Fully dynamic UI (no fake data)
+- Frontend is built from `frontend/`
+- Backend is deployed from `backend/app.py`
+- Requests to `/api/*` are rewritten to the FastAPI app
 
-🛠 Technologies Used
-Backend
-FastAPI
+### Optional environment variables
 
-Pandas
+- `VITE_API_BASE_URL`: frontend API base URL (default `/api`)
+- `FRONTEND_ORIGIN`: frontend URL allowed by backend CORS for local/custom setups
 
-Uvicorn
+Example:
 
-Frontend
-React (Vite)
+- `VITE_API_BASE_URL=/api`
+- `FRONTEND_ORIGIN=https://your-app.vercel.app`
 
-TailwindCSS
+## Environment file
 
-Recharts
+A single root `.env` is used for both apps:
 
-React-Leaflet
+```bash
+VITE_API_BASE_URL=/api
+FRONTEND_ORIGIN=http://localhost:5173
+```
 
-Axios
+Notes:
+- Frontend reads this root file via `frontend/vite.config.js` (`envDir: '..'`).
+- Backend reads it via `python-dotenv` in `backend/app.py`.
+- On Vercel, set the same variables in Project Settings → Environment Variables.
 
-🚀 Future Improvements
-Add real-time streaming ingestion
+## Notes
 
-Add water level indicators
-
-Add authentication
-
-Deploy to cloud (Docker + CI/CD)
+- Keep Python dependencies only in root `requirements.txt`.
+- Keep project docs only in this root `README.md`.
+- Keep git ignore rules only in root `.gitignore`.
