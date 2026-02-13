@@ -15,19 +15,6 @@
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "ecopulsse.vercel.app"
-        }
-      ],
-      "status": 308,
-      "headers": {
-        "Location": "https://ecopulse.vercel.app/$1"
-      }
-    },
-    {
       "src": "^/api(?:/(.*))?$",
       "dest": "/backend/app.py/$1"
     },
