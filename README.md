@@ -57,12 +57,10 @@ This repo is configured for a single Vercel project:
 ### Optional environment variables
 
 - `VITE_API_BASE_URL`: frontend API base URL (default `/api`)
-- `FRONTEND_ORIGIN`: frontend URL allowed by backend CORS for local/custom setups
 
 Example:
 
 - `VITE_API_BASE_URL=/api`
-- `FRONTEND_ORIGIN=https://your-app.vercel.app`
 
 ## Environment file
 
@@ -70,7 +68,6 @@ A single root `.env` is used for both apps:
 
 ```bash
 VITE_API_BASE_URL=/api
-FRONTEND_ORIGIN=http://localhost:5173
 ```
 
 Notes:
